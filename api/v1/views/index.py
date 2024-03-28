@@ -1,14 +1,30 @@
 #!/usr/bin/python3
 """ This module creates a Blueprint object app_views that handles all views"""
-from flask import Flask, jsonify
+from api.v1.views import app_views
+from flask import jsonify
+from models import storage
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
-app = Flask(__name__)
+classes = {"users": "User", "places": "Place", "states": "State",
+           "cities": "City", "amenities": "Amenity",
+           "reviews": "Review"}
 
 
 @app_views.route('/status', methods=['GET'])
-def get_status():
-    return jsonify({"status": "OK"})
+def status():
+    """ returns a JSON response """
+    return jsonify({'status': 'OK'})
 
 
-if __name__ == '__main__':
-    app.run()
+@app_views.route('/stats', methods=['GET'])
+def count():
+    """ retrieves the number of each objects by type """
+    count_dict = {}
+    for cls in classes:
+        count_dict[cls] = storage.count(classes[cls])
+    return jsonify(count_dict)
