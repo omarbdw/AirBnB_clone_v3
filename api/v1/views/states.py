@@ -5,9 +5,8 @@ States API endpoints
 from flask import Flask, jsonify, request, abort
 from api.v1.views import app_views
 from models.state import State
-from datetime import datetime
 from models import storage
-import uuid
+
 
 
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
