@@ -21,6 +21,7 @@ import unittest
 DBStorage = db_storage.DBStorage
 classes = {"Amenity": Amenity, "City": City, "Place": Place,
            "Review": Review, "State": State, "User": User}
+db = os.getenv('HBNB_TYPE_STORAGE')
 
 
 class TestDBStorageDocs(unittest.TestCase):
@@ -68,21 +69,80 @@ test_db_storage.py'])
                             "{:s} method needs a docstring".format(func[0]))
 
 
-class TestFileStorage(unittest.TestCase):
-    """Test the FileStorage class"""
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all_returns_dict(self):
-        """Test that all returns a dictionaty"""
-        self.assertIs(type(models.storage.all()), dict)
+class TestDBStorage(unittest.TestCase):
+    """Test the DBStorage class"""
+    @classmethod
+    def setUpClass(cls):
+        """Set up for the doc tests"""
+        cls.storage = DBStorage()
+        cls.storage.reload()
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_all_no_class(self):
-        """Test that all returns all rows when no class is passed"""
+    def test_all(self):
+        """Test the all method"""
+        storage = DBStorage()
+        storage.reload()
+        obj = storage.all()
+        self.assertIsNotNone(obj)
+        self.assertEqual(type(obj), dict)
+        self.assertIs(obj, storage._DBStorage__objects)
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
-        """test that new adds an object to the database"""
+        """Test the new method"""
+        storage = DBStorage()
+        storage.reload()
+        obj = storage.all()
+        user = User(email="omarbdw@yahoo.com", password="1234")
+        storage.new(user)
+        key = user.__class__.__name__ + "." + str(user.id)
+        self.assertIsNotNone(obj[key])
 
-    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
-        """Test that save properly saves objects to file.json"""
+        """Test the save method"""
+        storage = DBStorage()
+        storage.reload()
+        obj = storage.all()
+        user = User(email="omarbdw@yahoo.com", password="1234")
+        user.save()
+        storage.save()
+        key = user.__class__.__name__ + "." + str(user.id)
+        self.assertIsNotNone(obj[key])
+
+    def test_delete(self):
+        """Test the delete method"""
+        storage = DBStorage()
+        storage.reload()
+        obj = storage.all()
+        user = User(email="omarbdw@yahoo.com", password="1234")
+        storage.new(user)
+        storage.save()
+        storage.delete(user)
+        key = user.__class__.__name__ + "." + str(user.id)
+        self.assertIsNone(obj.get(key))
+
+    def test_get(self):
+        """Test the get method"""
+        storage = DBStorage()
+        storage.reload()
+        user = User(email="omarbdw@yahoo.com", password="1234")
+        storage.new(user)
+        storage.save()
+        get = storage.get(User, user.id)
+        self.assertIs(user, get)
+
+    def test_count(self):
+        """Test the count method"""
+        storage = DBStorage()
+        storage.reload()
+        count = storage.count()
+        user = User(email="omarbdw@yahoo.com", password="1234")
+        storage.new(user)
+        storage.save()
+        new_count = storage.count()
+        self.assertEqual(count + 1, new_count)
+        self.assertEqual(storage.count(User), 1)
+        self.assertEqual(storage.count(State), 0)
+
+
+if __name__ == "__main__":
+
+    unittest.main()
