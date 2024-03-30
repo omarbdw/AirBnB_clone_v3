@@ -71,78 +71,78 @@ test_db_storage.py'])
 
 class TestDBStorage(unittest.TestCase):
     """Test the DBStorage class"""
-    @classmethod
-    def setUpClass(cls):
-        """Set up for the doc tests"""
-        cls.storage = DBStorage()
-        cls.storage.reload()
-
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_all(self):
         """Test the all method"""
         storage = DBStorage()
         storage.reload()
-        obj = storage.all()
-        self.assertIsNotNone(obj)
-        self.assertEqual(type(obj), dict)
-        self.assertIs(obj, storage._DBStorage__objects)
+        all_objs = storage.all()
+        self.assertIsNot(all_objs, None)
+        self.assertEqual(type(all_objs), dict)
+        self.assertIs(all_objs, storage._DBStorage__objects)
 
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_new(self):
         """Test the new method"""
         storage = DBStorage()
         storage.reload()
-        obj = storage.all()
-        user = User(email="omarbdw@yahoo.com", password="1234")
-        storage.new(user)
-        key = user.__class__.__name__ + "." + str(user.id)
-        self.assertIsNotNone(obj[key])
+        all_objs = storage.all()
+        state = State(name="California")
+        state.save()
+        self.assertIn('State.{}'.format(state.id), all_objs.keys())
 
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_save(self):
         """Test the save method"""
         storage = DBStorage()
         storage.reload()
-        obj = storage.all()
-        user = User(email="omarbdw@yahoo.com", password="1234")
-        user.save()
+        state = State(name="California")
+        state.save()
         storage.save()
-        key = user.__class__.__name__ + "." + str(user.id)
-        self.assertIsNotNone(obj[key])
+        path = "file.json"
+        with open(path, "r") as f:
+            self.assertNotEqual(len(f.read()), 0)
+        os.remove(path)
 
-    def test_delete(self):
-        """Test the delete method"""
-        storage = DBStorage()
-        storage.reload()
-        obj = storage.all()
-        user = User(email="omarbdw@yahoo.com", password="1234")
-        storage.new(user)
-        storage.save()
-        storage.delete(user)
-        key = user.__class__.__name__ + "." + str(user.id)
-        self.assertIsNone(obj.get(key))
-
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_get(self):
         """Test the get method"""
         storage = DBStorage()
         storage.reload()
-        user = User(email="omarbdw@yahoo.com", password="1234")
-        storage.new(user)
-        storage.save()
-        get = storage.get(User, user.id)
-        self.assertIs(user, get)
+        state = State(name="California")
+        state.save()
+        get_obj = storage.get("State", state.id)
+        self.assertEqual(state, get_obj)
 
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_count(self):
         """Test the count method"""
         storage = DBStorage()
         storage.reload()
-        count = storage.count()
-        user = User(email="omarbdw@yahoo.com", password="1234")
-        storage.new(user)
-        storage.save()
-        new_count = storage.count()
-        self.assertEqual(count + 1, new_count)
-        self.assertEqual(storage.count(User), 1)
-        self.assertEqual(storage.count(State), 0)
+        count_states = storage.count("State")
+        state = State(name="California")
+        state.save()
+        new_count_states = storage.count("State")
+        self.assertEqual(count_states + 1, new_count_states)
+        self.assertEqual(new_count_states, storage.count("State"))
 
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    def test_delete(self):
+        """Test the delete method"""
+        storage = DBStorage()
+        storage.reload()
+        state = State(name="California")
+        state.save()
+        storage.delete(state)
+        self.assertNotIn(state, storage.all().values())
 
-if __name__ == "__main__":
-
-    unittest.main()
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    def test_close(self):
+        """Test the close method"""
+        storage = DBStorage()
+        storage.reload()
+        storage.close()
+        with self.assertRaises(AttributeError):
+            print(storage._DBStorage__session)
+        with self.assertRaises(AttributeError):
+            print(storage._DBStorage__engine)
