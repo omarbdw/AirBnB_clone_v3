@@ -146,3 +146,14 @@ class TestDBStorage(unittest.TestCase):
             print(storage._DBStorage__session)
         with self.assertRaises(AttributeError):
             print(storage._DBStorage__engine)
+            
+    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    def test_all_no_cls(self):
+        """Test the all method without passing a class"""
+        storage = DBStorage()
+        storage.reload()
+        state = State(name="California")
+        state.save()
+        all_objs = storage.all()
+        self.assertEqual(all_objs, storage.all())
+        self.assertIn(state, all_objs.values())
