@@ -21,7 +21,11 @@ def list_places_of_city(city_id):
 
 @app_views.route('/places/<place_id>', methods=['GET'])
 def get_place(place_id):
-    '''Retrieves a Place object'''
+    '''Retrieves the list of all Place objects of
+    a City: GET /api/v1/cities/<city_id>/places
+    If the city_id is not linked to any City
+    object, raise a 404 error
+    '''
     place = storage.get('Place', place_id)
     if place is None:
         abort(404)
