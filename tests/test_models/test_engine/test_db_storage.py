@@ -63,7 +63,7 @@ class TestDBStorageDocs(unittest.TestCase):
 
 class TestDBStorage(unittest.TestCase):
     """Test the DBStorage class"""
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_all(self):
         """Test the all method"""
         storage = DBStorage()
@@ -73,7 +73,7 @@ class TestDBStorage(unittest.TestCase):
         self.assertEqual(type(all_objs), dict)
         self.assertIs(all_objs, storage._DBStorage__objects)
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_new(self):
         """Test the new method"""
         storage = DBStorage()
@@ -83,7 +83,7 @@ class TestDBStorage(unittest.TestCase):
         state.save()
         self.assertIn('State.{}'.format(state.id), all_objs.keys())
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_save(self):
         """Test the save method"""
         storage = DBStorage()
@@ -96,7 +96,7 @@ class TestDBStorage(unittest.TestCase):
             self.assertNotEqual(len(f.read()), 0)
         os.remove(path)
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_get(self):
         """Test the get method"""
         storage = DBStorage()
@@ -106,7 +106,7 @@ class TestDBStorage(unittest.TestCase):
         get_obj = storage.get("State", state.id)
         self.assertEqual(state, get_obj)
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_count(self):
         """Test the count method"""
         storage = DBStorage()
@@ -118,7 +118,7 @@ class TestDBStorage(unittest.TestCase):
         self.assertEqual(count_states + 1, new_count_states)
         self.assertEqual(new_count_states, storage.count("State"))
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_delete(self):
         """Test the delete method"""
         storage = DBStorage()
@@ -128,7 +128,7 @@ class TestDBStorage(unittest.TestCase):
         storage.delete(state)
         self.assertNotIn(state, storage.all().values())
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_close(self):
         """Test the close method"""
         storage = DBStorage()
@@ -139,7 +139,7 @@ class TestDBStorage(unittest.TestCase):
         with self.assertRaises(AttributeError):
             print(storage._DBStorage__engine)
 
-    @unittest.skipIf(db != 'db', "Testing DBStorage")
+    @unittest.skipIf(models.storage_t != 'db', "Testing DBStorage")
     def test_all_no_cls(self):
         """Test the all method without passing a class"""
         storage = DBStorage()
