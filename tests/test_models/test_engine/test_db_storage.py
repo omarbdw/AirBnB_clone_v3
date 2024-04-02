@@ -138,7 +138,7 @@ class TestDBStorage(unittest.TestCase):
             print(storage._DBStorage__session)
         with self.assertRaises(AttributeError):
             print(storage._DBStorage__engine)
-            
+
     @unittest.skipIf(db != 'db', "Testing DBStorage")
     def test_all_no_cls(self):
         """Test the all method without passing a class"""
