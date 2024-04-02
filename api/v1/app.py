@@ -7,6 +7,7 @@ from api.v1.views import app_views
 from models import storage
 from os import getenv
 from flask_cors import CORS
+import json
 
 
 app = Flask(__name__)
@@ -28,7 +29,7 @@ def page_not_found(e):
     """
     Handles 404 errors.
     """
-    return make_response(jsonify({"error": "Not found"}), 404)
+    return make_response(json.dumps({"error": "Not found"}), 404)
 
 
 if __name__ == "__main__":
